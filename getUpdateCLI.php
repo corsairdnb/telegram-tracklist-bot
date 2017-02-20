@@ -4,15 +4,17 @@ require __DIR__ . '/vendor/autoload.php';
 
 use Longman\TelegramBot\TelegramLog as Log;
 
-$API_KEY = '373984740:AAE-x5yVlszhdNUhDB6xCFWDKpw6k3Lw2AY';
-$BOT_NAME = 'corsairdnb_tracklist_bot';
+$config = require 'config.php';
+
+$API_KEY = $config['API_KEY'];
+$BOT_NAME = $config['BOT_NAME'];
 $mysql_credentials = [
-    'host'     => 'localhost',
-    'user'     => 'root',
-    'password' => 'root',
-    'database' => 'telegram_bot_tracklist',
+    'host'     => $config['MYSQL_HOST'],
+    'user'     => $config['MYSQL_USER'],
+    'password' => $config['MYSQL_PASS'],
+    'database' => $config['MYSQL_DB'],
 ];
-$ADMIN_ID = 108894177; // corsairdnb
+$ADMIN_ID = $config['ADMIN_ID'];
 
 try {
     // Create Telegram API object

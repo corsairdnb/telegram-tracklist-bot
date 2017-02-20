@@ -32,3 +32,4 @@ phpdoc-*
 .Trashes
 
 logs
+config.php
