@@ -1,0 +1,46 @@
+dist: xenial
+sudo: required
+language: php
+
+addons:
+  mariadb: '10.1'
+
+cache:
+  directories:
+    - $HOME/.composer/cache
+
+php:
+  - 5.5
+  - 5.6
+  - 7.0
+  - nightly
+  - hhvm
+
+matrix:
+  allow_failures:
+    - php: nightly
+    - php: hhvm
+  fast_finish: true
+
+notifications:
+  on_success: never
+  on_failure: always
+
+git:
+  depth: 1
+
+install:
+  - travis_retry composer install --prefer-dist --no-interaction
+
+before_script:
+  - mysql -u root -e 'create database telegrambot; use telegrambot; source structure.sql;'
+
+script:
+  - ./vendor/bin/phpcs --standard=phpcs.xml -snp --encoding=utf-8 src/ --report-width=150
+  - if [ "$TRAVIS_PHP_VERSION" == "7.0" ]; then ./vendor/bin/phpunit --coverage-clover build/logs/clover.xml;
+    else ./vendor/bin/phpunit;
+    fi
+
+after_script:
+  - if [ "$TRAVIS_PHP_VERSION" == "7.0" ]; then
+    wget https://scrutinizer-ci.com/ocular.phar && php ocular.phar code-coverage:upload --format=php-clover build/logs/clover.xml; fi
