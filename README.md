@@ -86,6 +86,7 @@ group. This step is up to you actually.
     ```
     * * * * * ~/www/telegram-tracklist-bot/getUpdateCLI.php
     ```
+    
     This command will execute php-script every minute.
     
 ## Test your bot
