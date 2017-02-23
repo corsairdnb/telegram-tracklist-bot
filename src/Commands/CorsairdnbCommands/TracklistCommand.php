@@ -3,42 +3,23 @@
 namespace Longman\TelegramBot\Commands\UserCommands;
 
 use Longman\TelegramBot\Commands\UserCommand;
-//use Longman\TelegramBot\Entities\File;
+use Longman\TelegramBot\Entities\File;
 //use Longman\TelegramBot\Entities\PhotoSize;
 //use Longman\TelegramBot\Entities\UserProfilePhotos;
 use Longman\TelegramBot\Request;
+use Longman\TelegramBot\Conversation;
 
 /**
  * User "/whoami" command
  */
 class TracklistCommand extends UserCommand
 {
-    /**
-     * @var string
-     */
     protected $name = 'tracklist';
-
-    /**
-     * @var string
-     */
     protected $description = 'Returns tracklist from the given .m3u file';
-
-    /**
-     * @var string
-     */
     protected $usage = '/tracklist';
-
-    /**
-     * @var string
-     */
     protected $version = '0.0.1';
+    protected $conversation;
 
-    /**
-     * Command execute method
-     *
-     * @return mixed
-     * @throws \Longman\TelegramBot\Exception\TelegramException
-     */
     public function execute()
     {
         $message = $this->getMessage();
@@ -46,21 +27,58 @@ class TracklistCommand extends UserCommand
         $from       = $message->getFrom();
         $user_id    = $from->getId();
         $chat_id    = $message->getChat()->getId();
-        $message_id = $message->getMessageId();
+        $document = $message->getDocument();
+        // $message_id = $message->getMessageId();
 
         $data = [
             'chat_id'             => $chat_id,
-            'reply_to_message_id' => $message_id,
+            // 'reply_to_message_id' => $message_id,
         ];
 
-        Request::sendChatAction([
-            'chat_id' => $chat_id,
-            'action'  => 'typing',
-        ]);
+        $this->conversation = new Conversation($user_id, $chat_id, $this->getName());
+        $notes = &$this->conversation->notes;
+        !is_array($notes) && $notes = [];
+        $state = 0;
+        if (isset($notes['state'])) {
+            $state = $notes['state'];
+        }
 
-        $caption = 'hello world! it is tracklist bot';
+        switch ($state) {
+            case 0:
+                $data['text'] = 'Send me the tracklist file';
+                $state++;
+                $notes['state'] = $state;
+                $this->conversation->update();
+                break;
 
-        $data['text'] = $caption;
+            case 1:
+
+                if ($document && ($document->getMimeType()=='audio/x-mpegurl' || $document->getMimeType()=='text/plain') && $document->getFileSize() > 0) {
+                    $f = Request::getFile(get_object_vars($document));
+                    $f = $f->getResult();
+                    $path = $f->file_path;
+                    $file = file_get_contents('https://api.telegram.org/file/bot' . API_KEY . '/' . $path);
+
+                    $file = preg_replace('/\/.+\//m', PHP_EOL, $file);
+                    $file = preg_replace('/^.:.+\\\/m', '', $file);
+                    $file = preg_replace('/\.mp3$/m', '', $file);
+                    $file = preg_replace('/\r/m', '', $file);
+                    $file = preg_replace('/\n+/m', PHP_EOL, $file);
+                    $ar = explode(PHP_EOL, $file);
+                    $file = '';
+                    for ($i = 1; $i < count($ar); $i++) {
+                        $file .= $i . '. ' . $ar[$i] . PHP_EOL;
+                    }
+                    $data['text'] = $file . PHP_EOL;
+                }
+                else {
+                    $data['text'] = 'File is empty or broken. Please try again.' . PHP_EOL;
+                }
+
+                unset($notes['state']);
+                $this->conversation->stop();
+                break;
+        }
 
         return Request::sendMessage($data);
     }

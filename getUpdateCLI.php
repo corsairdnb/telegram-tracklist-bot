@@ -6,7 +6,7 @@ use Longman\TelegramBot\TelegramLog as Log;
 
 $config = require 'config.php';
 
-$API_KEY = $config['API_KEY'];
+define('API_KEY', $config['API_KEY']);
 $BOT_NAME = $config['BOT_NAME'];
 $mysql_credentials = [
     'host'     => $config['MYSQL_HOST'],
@@ -18,7 +18,7 @@ $ADMIN_ID = $config['ADMIN_ID'];
 
 try {
     // Create Telegram API object
-    $telegram = new Longman\TelegramBot\Telegram($API_KEY, $BOT_NAME);
+    $telegram = new Longman\TelegramBot\Telegram(API_KEY, $BOT_NAME);
 
     // Enable MySQL
     $telegram->enableMySQL($mysql_credentials);
