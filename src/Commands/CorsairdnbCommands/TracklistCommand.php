@@ -3,19 +3,13 @@
 namespace Longman\TelegramBot\Commands\UserCommands;
 
 use Longman\TelegramBot\Commands\UserCommand;
-use Longman\TelegramBot\Entities\File;
-//use Longman\TelegramBot\Entities\PhotoSize;
-//use Longman\TelegramBot\Entities\UserProfilePhotos;
 use Longman\TelegramBot\Request;
 use Longman\TelegramBot\Conversation;
 
-/**
- * User "/whoami" command
- */
 class TracklistCommand extends UserCommand
 {
     protected $name = 'tracklist';
-    protected $description = 'Returns tracklist from the given .m3u file';
+    protected $description = 'Returns tracklist from the given playlist file';
     protected $usage = '/tracklist';
     protected $version = '0.0.1';
     protected $conversation;
@@ -45,7 +39,7 @@ class TracklistCommand extends UserCommand
 
         switch ($state) {
             case 0:
-                $data['text'] = 'Send me the tracklist file';
+                $data['text'] = 'Send me the playlist file';
                 $state++;
                 $notes['state'] = $state;
                 $this->conversation->update();
