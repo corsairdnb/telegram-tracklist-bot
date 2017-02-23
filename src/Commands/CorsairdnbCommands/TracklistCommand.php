@@ -58,6 +58,7 @@ class TracklistCommand extends UserCommand
                     $file = preg_replace('/\.mp3$/m', '', $file);
                     $file = preg_replace('/\r/m', '', $file);
                     $file = preg_replace('/\n+/m', PHP_EOL, $file);
+                    $file = preg_replace('/\n$/m', '', $file);
                     $ar = explode(PHP_EOL, $file);
                     $file = '';
                     for ($i = 1; $i < count($ar); $i++) {
