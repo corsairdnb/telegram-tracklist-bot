@@ -17,15 +17,10 @@ $mysql_credentials = [
 $ADMIN_ID = $config['ADMIN_ID'];
 
 try {
-    // Create Telegram API object
     $telegram = new Longman\TelegramBot\Telegram(API_KEY, $BOT_NAME);
 
-    // Enable MySQL
     $telegram->enableMySQL($mysql_credentials);
 
-    //var_dump($telegram); die();
-
-//    Longman\TelegramBot\TelegramLog::initialize($your_external_monolog_instance);
     Log::initErrorLog(__DIR__ . '/logs/error.log');
     Log::initDebugLog(__DIR__ . '/logs/debug.log');
     Log::initUpdateLog(__DIR__ . '/logs/update.log');
@@ -36,18 +31,6 @@ try {
 
     $serverResponse = $telegram->handleGetUpdates();
 
-//    if ($serverResponse->isOk()) {
-//        LOG::debug('_____________________________________________');
-//        $updateCount = count($serverResponse->getResult());
-//        echo date('Y-m-d H:i:s', time()) . ' - Processed ' . $updateCount . ' updates';
-//    } else {
-//        echo date('Y-m-d H:i:s', time()) . ' - Failed to fetch updates' . PHP_EOL;
-//        echo $serverResponse->printError();
-//    }
-
-
-
 } catch (Longman\TelegramBot\Exception\TelegramException $e) {
-    // log telegram errors
     echo $e;
 }

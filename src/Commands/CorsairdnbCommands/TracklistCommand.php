@@ -61,8 +61,8 @@ class TracklistCommand extends UserCommand
                     $file = preg_replace('/\n$/m', '', $file);
                     $ar = explode(PHP_EOL, $file);
                     $file = '';
-                    for ($i = 1; $i < count($ar); $i++) {
-                        $file .= $i . '. ' . $ar[$i] . PHP_EOL;
+                    for ($i = 0; $i < count($ar); $i++) {
+                        $file .= $i+1 . '. ' . $ar[$i] . PHP_EOL;
                     }
                     $data['text'] = $file . PHP_EOL;
                 }
