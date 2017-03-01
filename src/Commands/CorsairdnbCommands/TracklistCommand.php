@@ -54,11 +54,15 @@ class TracklistCommand extends UserCommand
                     $file = file_get_contents('https://api.telegram.org/file/bot' . API_KEY . '/' . $path);
 
                     $file = preg_replace('/\/.+\//m', PHP_EOL, $file);
-                    $file = preg_replace('/^.:.+\\\/m', '', $file);
-                    $file = preg_replace('/\.mp3$/m', '', $file);
+                    $file = preg_replace('/^.+:.+\\\/m', '', $file);
+                    $file = preg_replace('/\.(mp3|flac|wav|ogg|aiff|mp4)/m', '', $file);
                     $file = preg_replace('/\r/m', '', $file);
                     $file = preg_replace('/\n+/m', PHP_EOL, $file);
                     $file = preg_replace('/\n$/m', '', $file);
+                    $file = preg_replace('/ +/m', ' ', $file);
+                    $file = preg_replace('/(ft\.|Feat\.?)/m', 'feat.', $file);
+                    $file = preg_replace('/(Remix|remix)/m', 'rmx', $file);
+
                     $ar = explode(PHP_EOL, $file);
                     $file = '';
                     for ($i = 0; $i < count($ar); $i++) {
